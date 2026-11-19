@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Lista de tarefas</title>
+    <style>
+      body {
+        max-width: 640px;
+        margin: 3rem auto;
+        padding: 0 1rem;
+        font-family: system-ui, sans-serif;
+      }
+
+      li {
+        margin: 0.75rem 0;
+      }
+
+      .concluida {
+        color: #52605a;
+      }
+
+      #mensagem {
+        color: #a12622;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Minhas tarefas</h1>
+    <p id="mensagem" role="status">Carregando tarefas...</p>
+    <ul id="tarefas"></ul>
+
+    <script>
+      async function carregarTarefas() {
+        const mensagem = document.querySelector("#mensagem");
+        const lista = document.querySelector("#tarefas");
+
+        try {
+          const resposta = await fetch("/api/tarefas");
+          if (!resposta.ok) {
+            throw new Error(`A API respondeu com status ${resposta.status}`);
+          }
+
+          const tarefas = await resposta.json();
+          lista.replaceChildren(
+            ...tarefas.map((tarefa) => {
+              const item = document.createElement("li");
+              item.textContent = `${tarefa.titulo} — ${
+                tarefa.concluida ? "Concluída" : "Pendente"
+              }`;
+              if (tarefa.concluida) item.className = "concluida";
+              return item;
+            })
+          );
+          mensagem.textContent = "";
+        } catch (erro) {
+          mensagem.textContent = `Não foi possível carregar as tarefas: ${erro.message}`;
+        }
+      }
+
+      carregarTarefas();
+    </script>
+  </body>
+</html>
