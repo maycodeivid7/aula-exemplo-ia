@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.output/
+.wrangler/
+.tanstack/
+.vite/
+.env
+.env.*
+!.env.example
+*.log
